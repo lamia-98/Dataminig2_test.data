@@ -182,3 +182,65 @@ def get_maj_class(self, sample_target):
     else:
         decision = maj_class[0]
     return decision
+# cette fonction retourne la classe ou prédiction donnée un x
+def predict(self, sample):
+    if self.decision is not None:
+        if self.verbose:
+            print("Decision:", self.decision)
+        return self.decision
+    else:
+        # Sélectionnez la valeur de l'attribut grand écart dans les données
+        attr_val = sample[self.split_feat_name]
+        if self.verbose:
+            print('attr_val')
+        # Si la valeur de la fonctionnalité n'est pas numérique, accédez simplement à \
+        # nœud enfant correspondant et impression
+        if not isinstance(attr_val, Number):
+            child = self.children[attr_val]
+            if self.verbose:
+                print("Testing ", self.split_feat_name, "->", attr_val)
+        # Si la valeur est numérique, voyez si elle est supérieure ou inférieure à \
+        # seuil
+         else:
+            if attr_val > self.threshold:
+                child = self.children['greater']
+                if self.verbose:
+                    print("Testing ", self.split_feat_name, "->",
+                          'greater than ', self.threshold)
+            else:
+                 child = self.children['less']
+                if self.verbose:
+                        print("Testing ", self.split_feat_name, "->",
+                              'less than or equal', self.threshold)
+        return child.predict(sample)
+
+            # Cette fonction effectue un réglage hyperparathyroidism en utilisant la validation croisée
+
+def cross_validation(x, y, model, n_folds, params, seed=4):
+     # Création de combinaisons de tous les hyperparathyroidism
+    keys, values = zip(*params.items())
+    params = [dict(zip(keys, v)) for v in itertools.product(*values)]
+   # Initialisez une liste pour stocker la précision de chaque ensemble de paramètres
+   accuracy = []
+   for j in range(0, len(params)):
+       indexes = np.array(x.index)
+       random.Random(seed).shuffle(indexes)
+       folds = np.array_split(indexes, n_folds)
+       acc = []  # Initialiser une précision locale pour chaque pli
+     # Calculer la précision de chaque pli en utilisant le premier comme ensemble de test
+      for k in range(1, n_folds):
+          model.set_params(params[j])
+         # Entraînez le modèle avec le pli
+          model.fit(x.loc[folds[k]], y.loc[folds[k]])
+          prediction = x.loc[folds[1]].apply(lambda row: model.predict(row), axis=1)
+          acc.append(sum((prediction == y.loc[folds[1]])) / len(y.loc[folds[1]]))
+             # Calculer la précision de tous les plis pour l'ensemble de paramètres
+      accuracy.append(sum(acc) / len(acc))
+      print(f"Parameters: {params[j]}, Accuracy: {accuracy[j]}")
+      seed = seed + 1
+
+     # Sélectionner l'ensemble des meilleurs hyperparathyroidism
+   max_value = max(accuracy)
+   max_index = accuracy.index(max_value)
+   print('Best hyper parameters:')
+   print(params[max_index])
