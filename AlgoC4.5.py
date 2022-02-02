@@ -244,3 +244,55 @@ def cross_validation(x, y, model, n_folds, params, seed=4):
    max_index = accuracy.index(max_value)
    print('Best hyper parameters:')
    print(params[max_index])
+# Function Main
+# ########################################################
+
+def main(filename: str = 'dataset.csv'):
+    # Chargement des donnÃ©es
+    df = pd.read_csv(filename)
+    print("L'entÃªte du dataframe: \n\n", df.head())
+
+    # MÃ©langer les donnÃ©es
+    np.random.shuffle(df)
+
+    # Extraction des donnÃ©es
+    x = df[:, 0:13]
+    y = df[:, 13]
+
+    # Normalisation des donnÃ©es
+    mean = x.mean(axis=0)
+    std = x.std(axis=0)
+    x = (x - mean) / std
+
+    # division des donnÃ©es
+    div_index = int(0.80 * len(x))
+    x_train = x[0:div_index]
+    y_train = y[0:div_index]
+    x_test = x[div_index:]
+    y_test = y[div_index:]
+
+    # validation des donnees
+    df.validate_data(x_train, y_train)
+
+    # Initialization of the model
+    tree_dataset = TreeNode()
+    tree_dataset.recursive_generate_tree(x_train, y_train)
+    pre = tree_dataset.predict(x_test)
+
+    # Defining hyper parameters
+    param_grid = {'min_samples_split': [2, 3, 4, 5], 'max_depth': [2, 3, 4, None],
+                  'seed': [2]}
+
+    # Cross validation pour trouver le bon hyper parameters
+
+    cross_validation(x_train, y_train, pre, 5, param_grid)
+    plt.scatter(df['age'], df['sex'])
+    plt.title("malades cardiaque")
+    plt.xlabel('age')
+    plt.ylabel('sex')
+    plt.show()
+
+
+# Appelle de la fonction main
+
+main()
