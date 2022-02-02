@@ -136,3 +136,35 @@ def split_attribute(self, sample_data, sample_target):
                     print(f"Split by {best_attribute}, at {threshold}, IG: {info_gain_max:.2f}")
 
             return best_attribute, best_threshold, splitter
+# Cette fonction calcule le gain d'information en utilisant un \
+# attribut pour diviser la cible
+def compute_info_gain(self, sample_attribute, sample_target):
+    values = sample_attribute.value_counts(normalize=True)
+    split_ent = 0
+
+    for v, fr in values.iteritems():
+        # Calculer l'entropie pour l'échantillon cible correspondant à la classe
+        index = sample_attribute == v
+        sub_ent = self.compute_entropy(sample_target[index])
+
+        split_ent += fr * sub_ent
+
+    ent = self.compute_entropy(sample_target)
+    # Renvoie le gain d'information du grand écart
+    return ent - split_ent
+
+
+# Cette fonction sélectionne la classe majoritaire de la cible pour prendre une décision
+
+def get_maj_class(self, sample_target):
+    freq = sample_target.value_counts().sort_values(ascending=False)
+
+    # Sélectionnez le nom de la classe (classes) qui a le nombre maximum d'enregistrements
+    maj_class = freq.keys()[freq == freq.max()]
+
+    if len(maj_class) > 1:
+        decision = maj_class[random.Random(self.seed).randint(0, len(maj_class) - 1)]
+
+    else:
+        decision = maj_class[0]
+    return decision
