@@ -136,6 +136,20 @@ def split_attribute(self, sample_data, sample_target):
                     print(f"Split by {best_attribute}, at {threshold}, IG: {info_gain_max:.2f}")
 
             return best_attribute, best_threshold, splitter
+  # Cette fonction calcule l'entropie basée sur la distribution de \
+    # le fractionnement cible
+
+
+def compute_entropy(sample_target_split):
+    # S'il n'y a qu'une seule classe, l'entropie est 0
+    if len(sample_target_split) < 2:
+        return 0
+
+    # Sinon calculer l'entropie
+    else:
+        freq = np.array(sample_target_split.value_counts(normalize=True))
+
+        return -(freq * np.log2(freq + 1e-6)).sum()        
 # Cette fonction calcule le gain d'information en utilisant un \
 # attribut pour diviser la cible
 def compute_info_gain(self, sample_attribute, sample_target):
